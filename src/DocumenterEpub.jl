@@ -218,14 +218,19 @@ end
 function prerender_mathjax(formula::String, display_mode::Bool)
     mathjax = joinpath(@__DIR__, "..", "res", "mathjax","node-main.js")
     rf = escape_string(replace(formula, '\'' => "\\prime"))
-    svg_code = String(read(`$(NodeJS.nodejs_cmd()) -e """
-        require('$(escape_string(mathjax))').init({
-            loader: {load: ['input/tex', 'output/svg']}, svg: {'localID':$(rand(1:100000))}
-        }).then((MathJax) => {
-            const svg = MathJax.tex2svg('$rf', {display: $(display_mode)});
-            console.log(MathJax.startup.adaptor.innerHTML(svg));
-        }).catch((err) => console.log(err.message));
-        """`))
+    svg_code = nothing
+    cd(dirname(mathjax)) do
+        svg_code= String(read(`$(NodeJS.nodejs_cmd()) -e """
+            require('$(escape_string(mathjax))').init({
+                loader: {load: ['input/tex', 'output/svg']}, svg: {
+                    fontCache: 'none',
+                    'localID':$(rand(1:100000))}
+            }).then((MathJax) => {
+                const svg = MathJax.tex2svg('$rf', {display: $(display_mode)});
+                console.log(MathJax.startup.adaptor.innerHTML(svg));
+            }).catch((err) => console.log(err.message));
+            """`))
+    end
     return svg_code
 end
 
@@ -245,7 +250,7 @@ function prerender_highlightjs(hs::String, lang::String)::String
     write(inbuffer, """const hljs = require('$(escape_string(hljsfile))');""")
 
     # un-escape code string
-    cs = html_unescape(hs) |> escape_string
+    cs = escape_string(html_unescape(hs))
     # add to content of jsbuffer
     write(inbuffer, """console.log("<pre><code class=\\"hljs\\">" + hljs.highlight("$lang", "$cs").value + "</code></pre>");""")
 
