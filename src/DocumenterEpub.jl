@@ -37,8 +37,8 @@ EPUB format Writer. `color` specifies whether or not the code highlighting will 
 or in color. `lang` sets the language in the EPUB.
 """
 Base.@kwdef struct EPUB <: Documenter.Writer
-    color::Bool=false
-    lang::String="en"
+    color::Bool = false
+    lang::String = "en"
 end
 
 """
@@ -214,32 +214,31 @@ function html_unescape(cs::AbstractString)
     return cs
 end
 
-#https://www.npmjs.com/package/mathjax
+# https://www.npmjs.com/package/mathjax
 function prerender_mathjax(formula::String, display_mode::Bool)
-    svg_code = cd(abspath(joinpath(@__DIR__,".."))) do
-        rf = escape_string(replace(formula,'\'' => "\\prime"))
-        String(read(`$(NodeJS.nodejs_cmd()) -e """
-            require('mathjax').init({
-                loader: {load: ['input/tex', 'output/svg']}, svg: {'localID':$(rand(1:100000))}
-            }).then((MathJax) => {
-                const svg = MathJax.tex2svg('$rf', {display: $(display_mode)});
-                console.log(MathJax.startup.adaptor.innerHTML(svg));
-            }).catch((err) => console.log(err.message));
-            """`))
-        end
+    mathjax = joinpath(@__DIR__, "..", "res", "mathjax","node-main.js")
+    rf = escape_string(replace(formula, '\'' => "\\prime"))
+    svg_code = String(read(`$(NodeJS.nodejs_cmd()) -e """
+        require('$(escape_string(mathjax))').init({
+            loader: {load: ['input/tex', 'output/svg']}, svg: {'localID':$(rand(1:100000))}
+        }).then((MathJax) => {
+            const svg = MathJax.tex2svg('$rf', {display: $(display_mode)});
+            console.log(MathJax.startup.adaptor.innerHTML(svg));
+        }).catch((err) => console.log(err.message));
+        """`))
     return svg_code
 end
 
-const HLJS_LANGS = readlines(joinpath(@__DIR__,"..","res","supported_langs.txt"))
+const HLJS_LANGS = readlines(joinpath(@__DIR__, "..", "res", "supported_langs.txt"))
 
 """
 Takes a html string that may contain `<pre><code ... </code></pre>` blocks and use node and
 highlight.js to pre-render them to HTML.
 """
-function prerender_highlightjs(hs::String,lang::String)::String
+function prerender_highlightjs(hs::String, lang::String)::String
     # select highlight js script (julia one stems from https://fredrikekre.se/posts/highlight-julia/)
-    hljsfile = occursin("julia",lang) ? "julia.highlight.min.js" : "highlight.pack.js"
-    hljsfile = abspath(joinpath(@__DIR__,"..","res",hljsfile))
+    hljsfile = occursin("julia", lang) ? "julia.highlight.min.js" : "highlight.pack.js"
+    hljsfile = abspath(joinpath(@__DIR__, "..", "res", hljsfile))
 
     # buffer to write the JS script
     inbuffer = IOBuffer()
@@ -302,7 +301,7 @@ function _create_spine_item(pagefile)
     return spine_item
 end
 
-const ALLOWED_EXT = (".xhtml", ".png", ".jpg", "jpeg", ".gif", ".md", ".svg","")
+const ALLOWED_EXT = (".xhtml", ".png", ".jpg", "jpeg", ".gif", ".md", ".svg", "")
 function render(doc::Documents.Document, settings::EPUB=EPUB())
     !isempty(doc.user.sitename) || error("EPUB output requires `sitename`.")
 
@@ -327,7 +326,7 @@ function render(doc::Documents.Document, settings::EPUB=EPUB())
     mv(doc.user.build, tmp_html_build; force=true)
     epub_content_root = abspath(joinpath(doc.user.build, "epub", "Content"))
     mkpath(epub_content_root)
-    mv(tmp_html_build,epub_content_root;force=true)
+    mv(tmp_html_build, epub_content_root;force=true)
 
     # remove all non allowed files
     for (root, _, files) in walkdir(epub_content_root)
@@ -354,10 +353,10 @@ function render(doc::Documents.Document, settings::EPUB=EPUB())
     end
 
     # remove the unused css
-    rm(joinpath(epub_content_root,settings.color ? "grayscale.css" : "github.css"))
+    rm(joinpath(epub_content_root, settings.color ? "grayscale.css" : "github.css"))
 
     # create the coverpage
-    open(joinpath(epub_content_root,"titlepage.xhtml"),"w") do io
+    open(joinpath(epub_content_root, "titlepage.xhtml"), "w") do io
         print(io,  render_cover_page(ctx))
     end
 
@@ -409,7 +408,7 @@ function render(doc::Documents.Document, settings::EPUB=EPUB())
             pagefile == "titlepage.xhtml" && continue # already added
             manifest_item = _create_manifest_item(root, pagefile)
             spine_item = nothing
-            if endswith(pagefile,".xhtml") || endswith(pagefile,".svg")
+            if endswith(pagefile, ".xhtml") || endswith(pagefile, ".svg")
                 spine_item = _create_spine_item(pagefile)
             end
             if manifest_item !== nothing
@@ -498,8 +497,8 @@ function render_cover_page(ctx)
                     title(ctx.doc.user.sitename),
                     link[:href => "style.css", :rel => "stylesheet", :type => "text/css"](),
                 ),
-                body[:class=>"titlepage",Symbol("epub:type")=>"frontmatter titlepage"](
-                    h1[:class=>"titlepage"](uppercase(ctx.doc.user.sitename)),
+                body[:class => "titlepage",Symbol("epub:type") => "frontmatter titlepage"](
+                    h1[:class => "titlepage"](uppercase(ctx.doc.user.sitename)),
                     p(ctx.doc.user.version),
                     p(ctx.doc.user.authors)
                 ),
@@ -593,7 +592,7 @@ function render_article(ctx, navnode)
                 dd[:id => "$(fid)", Symbol("epub:type") => "footnote"](mdconvert(f.text, Markdown.MD()))
             end
         end
-        push!(art_body.nodes,hr())
+        push!(art_body.nodes, hr())
         push!(art_body.nodes, section[Symbol("epub:type") => "footnotes"](dl(fnotes)))
     end
     return art_body
@@ -603,14 +602,14 @@ end
     saneid(anchor)
 Sanitize the `anchor`s id.
 """
-saneid(a::Anchors.Anchor) = saneid(a.id,a.nth)
-function saneid(id, nth = 1)
+saneid(a::Anchors.Anchor) = saneid(a.id, a.nth)
+function saneid(id, nth=1)
 
-    isempty(id) && return string("id",rand(1_10000))
+    isempty(id) && return string("id", rand(1_10000))
     # use strict html 4 rules for ids: start with a letter followed by a subset of allowed chars
-    if occursin(r"^[^a-zA-Z]",id) || occursin(r"[^a-zA-Z0-9-_:.]", id)
+    if occursin(r"^[^a-zA-Z]", id) || occursin(r"[^a-zA-Z0-9-_:.]", id)
         # just hash it
-        return string("id",hash(id) + nth - 1)
+        return string("id", hash(id) + nth - 1)
     else
         return nth == 1 ? id : string(id, "-", nth)
     end
@@ -639,7 +638,7 @@ function domify(ctx, navnode, anchor::Anchors.Anchor)
     @tags a
     id = saneid(anchor)
     if id ∈ ctx.ids
-        id = string("id-",rand(1:100000))
+        id = string("id-", rand(1:100000))
     end
     push!(ctx.ids, id)
     frag = '#' * id
@@ -685,7 +684,7 @@ function domify(ctx, navnode, contents::Documents.ContentsNode)
         path = joinpath(navnode_dir, path) # links in ContentsNodes are relative to current page
         path = relhref(navnode_url, get_url(path))
         header = anchor.object
-        url = string(path,'#', saneid(anchor))
+        url = string(path, '#', saneid(anchor))
         node = a[:href => url](mdconvert(header.text; droplinks=true))
         level = Utilities.header_level(header)
         push!(lb, level, node)
@@ -716,7 +715,7 @@ function domify(ctx, navnode, node::Documents.DocsNode)
 
     id = saneid(node.anchor)
     if id ∈ ctx.ids
-        id = string("id-",rand(1:100000))
+        id = string("id-", rand(1:100000))
     end
     push!(ctx.ids, id)
     article[".docstring"](
