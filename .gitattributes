@@ -1,0 +1,3 @@
+node_modules/* linguist-vendored
+res/highlight.pack.js linguist-vendored
+res/julia.highlight.min.js linguist-vendored

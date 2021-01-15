@@ -1,0 +1,15 @@
+name = "DocumenterEpub"
+uuid = "be4a6882-a45f-4bf3-9876-0e7ffb31ffcc"
+authors = ["Gerhard Aigner <gerhard.aigner@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+Debugger = "31a5f54b-26ea-5ae9-a837-f05ce5417438"
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+EzXML = "8f5d6c58-4d21-5cfd-889c-e3ad7ee6a615"
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+Markdown = "d6f4376e-aef5-505a-96c1-9c027394607a"
+NodeJS = "2bd173c7-0d6d-553b-b6af-13a54713934c"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+ZipFile = "a5390f91-8eb1-5f08-bee0-b1d1ffed6cea"
