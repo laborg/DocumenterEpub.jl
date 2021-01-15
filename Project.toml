@@ -5,7 +5,6 @@ version = "0.1.0"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
-Debugger = "31a5f54b-26ea-5ae9-a837-f05ce5417438"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 EzXML = "8f5d6c58-4d21-5cfd-889c-e3ad7ee6a615"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
