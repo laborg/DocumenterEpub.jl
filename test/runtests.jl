@@ -98,16 +98,6 @@ multidoc(x,y,z) = x + y + z
 export complicated, simple
 end
 
-# for color in (true, false)
-#     sitename= "testepub_" * (color ? "with_color" : "grayscale")
-#     makedocs(;
-#         sitename=sitename,
-#         source=abspath(joinpath(@__DIR__, "doc")),
-#         pages=pages,
-#         format=EPUB(color=color),
-#     )
-# end
-
 isepubcheck = false
 try
     if Sys.iswindows()
@@ -115,12 +105,12 @@ try
     else
         run(`which epubcheck`)
     end
-    global isepubcheck = true
+global isepubcheck = true
 catch e
     @warn "Couldn't find `epubcheck` - necessary for running the test suite"
 end
 
-testconfigs =[
+testconfigs = [
     (;sitename="color",color=true,pages=pages,version="",authors="",lang="en"),
     (;sitename="gray",color=false,pages=pages,version="",authors="MemeLord3000",lang="en"),
     (;sitename="nopages",color=false,pages=[],version="3.0",authors="",lang="de")
@@ -136,7 +126,7 @@ testconfigs =[
         authors=config[:authors],
         source=abspath(joinpath(@__DIR__, "doc")),
         pages=config[:pages],
-        format=EPUB(color=config[:color],lang=config[:lang]),
+        format=EPUB(color=config[:color], lang=config[:lang]),
     )
 
     expectedfile = joinpath(@__DIR__, "build", config[:sitename] * ".epub")

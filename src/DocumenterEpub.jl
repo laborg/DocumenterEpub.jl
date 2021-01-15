@@ -17,7 +17,6 @@ using Documenter.Utilities.MDFlatten
 
 using Dates: now, UTC, Dates
 
-import JSON
 import NodeJS
 import ZipFile
 import EzXML
@@ -62,8 +61,6 @@ Returns a page (as a [`Documents.Page`](@ref) object) using the [`HTMLContext`](
 """
 getpage(ctx, path) = ctx.doc.blueprint.pages[path]
 getpage(ctx, navnode::Documents.NavNode) = getpage(ctx, navnode.page)
-
-
 
 function toepub(doc)
     epub_dir = joinpath(doc.user.build, "epub")
@@ -235,17 +232,7 @@ function prerender_mathjax(formula::String, display_mode::Bool)
     return svg_code
 end
 
-function collect_langs()
-     highlight_js = abspath(joinpath(@__DIR__,"..","res","highlight.pack.js"))
-     jsbuffer = IOBuffer()
-     write(jsbuffer, """const hljs = require('$highlight_js');""")
-     write(jsbuffer, """console.log(JSON.stringify(hljs.listLanguages(), null, 4));""")
-     outbuffer = IOBuffer()
-     run(pipeline(`$(NodeJS.nodejs_cmd()) -e "$(String(take!(jsbuffer)))"`, stdout=outbuffer))
-     out = String(take!(outbuffer))
-     return string.(JSON.Parser.parse(out))
-end
-const HLJS_LANGS = collect_langs()
+const HLJS_LANGS = readlines(joinpath(@__DIR__,"..","res","supported_langs.txt"))
 
 """
 Takes a html string that may contain `<pre><code ... </code></pre>` blocks and use node and
