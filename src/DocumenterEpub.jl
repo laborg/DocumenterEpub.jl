@@ -1,7 +1,7 @@
 module DocumenterEpub
 
 import Markdown
-using Dates: Dates, @dateformat_str, now
+using Dates: Dates, now, UTC
 
 import Documenter
 import Documenter.Documents
@@ -11,11 +11,9 @@ import Documenter.Anchors
 import Documenter.Selectors
 import Documenter.Documenter
 import Documenter.Utilities
-import Documenter.Utilities.DOM: DOM, Tag, @tags
+using Documenter.Utilities.DOM: DOM, Tag, @tags
 using Documenter.Utilities: Default
 using Documenter.Utilities.MDFlatten
-
-using Dates: now, UTC, Dates
 
 import NodeJS
 import ZipFile
@@ -245,7 +243,7 @@ function prerender_highlightjs(hs::String,lang::String)::String
 
     # buffer to write the JS script
     inbuffer = IOBuffer()
-    write(inbuffer, """const hljs = require('$hljsfile');""")
+    write(inbuffer, """const hljs = require('$(escape_string(hljsfile))');""")
 
     # un-escape code string
     cs = html_unescape(hs) |> escape_string
