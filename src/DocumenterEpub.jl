@@ -18,6 +18,8 @@ using Documenter.Utilities.MDFlatten
 import NodeJS
 import ZipFile
 import EzXML
+import Rsvg
+import Cairo
 
 export EPUB
 
@@ -215,10 +217,27 @@ function html_unescape(cs::AbstractString)
 end
 
 # https://www.npmjs.com/package/mathjax
+# function prerender_mathjax(formula::String, display_mode::Bool)
+#     mathjax = joinpath(@__DIR__, "..", "res", "mathjax","node-main.js")
+#     rf = escape_string(replace(formula, '\'' => "\\prime"))
+#     resid = rand(1:1000000)
+#     html_code = nothing
+#     cd(dirname(mathjax)) do
+#         html_code= String(read(`$(NodeJS.nodejs_cmd()) -e """
+#             require('$(escape_string(mathjax))').init({
+#                 loader: {load: ['input/tex', 'output/chtml']}}).then((MathJax) => {
+#                 const chtml = MathJax.tex2chtml('$rf', {display: $(display_mode)});
+#                 console.log(MathJax.startup.adaptor.outerHTML(chtml));
+#             }).catch((err) => console.log(err.message));
+#             """`))
+#     end
+#     return html_code
+# end
 function prerender_mathjax(formula::String, display_mode::Bool)
     mathjax = joinpath(@__DIR__, "..", "res", "mathjax","node-main.js")
     rf = escape_string(replace(formula, '\'' => "\\prime"))
-    svg_code = nothing
+    pngbuf = IOBuffer()
+    svg_code =""
     cd(dirname(mathjax)) do
         svg_code= String(read(`$(NodeJS.nodejs_cmd()) -e """
             require('$(escape_string(mathjax))').init({
@@ -230,8 +249,15 @@ function prerender_mathjax(formula::String, display_mode::Bool)
                 console.log(MathJax.startup.adaptor.innerHTML(svg));
             }).catch((err) => console.log(err.message));
             """`))
+        r = Rsvg.handle_new_from_data(svg_code)
+        d = Rsvg.handle_get_dimensions(r);
+        cs = Cairo.CairoImageSurface(d.width,d.height,Cairo.FORMAT_ARGB32);
+        c = Cairo.CairoContext(cs);
+        Rsvg.handle_render_cairo(c,r);
+        pngbuf = IOBuffer()
+        Cairo.write_to_png(cs,pngbuf);
     end
-    return svg_code
+    return svg_code, pngbuf
 end
 
 const HLJS_LANGS = readlines(joinpath(@__DIR__, "..", "res", "supported_langs.txt"))
@@ -306,6 +332,7 @@ function _create_spine_item(pagefile)
     return spine_item
 end
 
+const resdir = Ref{String}("")
 const ALLOWED_EXT = (".xhtml", ".png", ".jpg", "jpeg", ".gif", ".md", ".svg", "")
 function render(doc::Documents.Document, settings::EPUB=EPUB())
     !isempty(doc.user.sitename) || error("EPUB output requires `sitename`.")
@@ -316,6 +343,10 @@ function render(doc::Documents.Document, settings::EPUB=EPUB())
         @warn "Can't generate landing page (index.html): src/index.md missing" keys(doc.blueprint.pages)
     end
     @info "DocumenterEpub: rendering HTML pages for EPUB."
+
+    epub_content_root = abspath(joinpath(doc.user.build, "epub", "Content"))
+    resdir[] = abspath(joinpath(doc.user.build,"generated"))
+    mkpath(resdir[])
 
     # first do the html creation into doc.user.build
     ctx = EPUBContext(doc, settings)
@@ -329,9 +360,9 @@ function render(doc::Documents.Document, settings::EPUB=EPUB())
     # move the created files into from "<doc.user.build>/*" into "<doc.user.build>/epub/Content/*"
     tmp_html_build = mktempdir()
     mv(doc.user.build, tmp_html_build; force=true)
-    epub_content_root = abspath(joinpath(doc.user.build, "epub", "Content"))
     mkpath(epub_content_root)
     mv(tmp_html_build, epub_content_root;force=true)
+
 
     # remove all non allowed files
     for (root, _, files) in walkdir(epub_content_root)
@@ -341,6 +372,8 @@ function render(doc::Documents.Document, settings::EPUB=EPUB())
             end
         end
     end
+
+
 
     # copy the epub template into the `epub_content_root`
     template_source = joinpath(@__DIR__, "..", "res", "template")
@@ -912,15 +945,30 @@ function mdconvert(i::Markdown.Image, parent; kwargs...)
 end
 
 mdconvert(i::Markdown.Italic, parent; kwargs...) = Tag(:em)(mdconvert(i.text, i; kwargs...))
+using Base64
 
 function mdconvert(m::Markdown.LaTeX, ::MDBlockContext; kwargs...)
-    @tags div
-    return div[:class => "mjx-container"](Tag(Symbol("#RAW#"))(prerender_mathjax(m.formula, true)))
+    @tags div img object
+    svgcode, pngbuf = prerender_mathjax(m.formula, true)
+    psvg = EzXML.parsexml(svgcode)
+    desc = EzXML.ElementNode("desc")
+    img = EzXML.ElementNode("img")
+    img["src"] ="data:image/png;base64, " * base64encode(take!(pngbuf))
+    EzXML.link!(desc,img)
+    EzXML.linkprev!(psvg.root.firstnode,desc)
+    Tag(Symbol("#RAW#"))(string(psvg.root))
 end
 
 function mdconvert(m::Markdown.LaTeX, parent; kwargs...)
-    @tags div
-    return Tag(Symbol("#RAW#"))(prerender_mathjax(m.formula, false))
+    @tags div img object
+    svgcode, pngbuf = prerender_mathjax(m.formula, false)
+    psvg = EzXML.parsexml(svgcode)
+    desc = EzXML.ElementNode("desc")
+    img = EzXML.ElementNode("img")
+    img["src"] ="data:image/png;base64, " * base64encode(take!(pngbuf))
+    EzXML.link!(desc,img)
+    EzXML.linkprev!(psvg.root.firstnode,desc)
+    Tag(Symbol("#RAW#"))(string(psvg.root))
 end
 
 mdconvert(::Markdown.LineBreak, parent; kwargs...) = Tag(:br)()
