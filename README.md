@@ -34,21 +34,21 @@ makedocs(;
 ### Features / Design choices
  - Target e-ink e-reader devices - Tablets/Computers will not have a problem displaying the
     HTML output version of Documenter
- - Create epub 3.2 files, but stay backward compatible where possible (e.g. include the
+ - Create EPUB 3.2 files, but stay backward compatible where possible (e.g. include the
     navigation as .ncx file)
  - Use a simple layout/CSS to be compatible with older e-reader devices
  - Use [JuliaMono](https://github.com/cormullion/juliamono) for code
- - No JavaScript dependency in the resulting EPUB through
+ - No JavaScript dependency in the resulting EPUB through:
     - prerendering of syntax highlighting for code listings using Highlight.js, including
         the work of Fredrik Ekre (see the blog post: https://fredrikekre.se/posts/highlight-julia/)
     - prerendering of LaTeX math/formulas into SVG (epub 3.2 spec contains MathML but this is
         poorly supported... )
  - I've chosen the controversial route of letting code listings wrap the source code on
     whitespace
- - Keep the options to a minimum - urrently only one option (color=true/false)
+ - Keep the options to a minimum - currently only one option (color=true/false)
  - Remote links are displayed but aren't active
  - Files that can't be shown on e-reader devices are removed (e.g. videos)
 
 ### Releases / Changelog
 
- - 0.1.0 initial release
+ - 0.1.0 Initial release
