@@ -11,3 +11,10 @@ Markdown = "d6f4376e-aef5-505a-96c1-9c027394607a"
 NodeJS = "2bd173c7-0d6d-553b-b6af-13a54713934c"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 ZipFile = "a5390f91-8eb1-5f08-bee0-b1d1ffed6cea"
+
+[compat]
+Documenter = "0.25.0,0.26.0"
+EzXML = "1.1.0"
+NodeJS = "1.1.0"
+ZipFile = "0.9.0"
+julia = "1.3"
