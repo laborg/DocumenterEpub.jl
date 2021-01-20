@@ -454,6 +454,9 @@ function render(doc::Documents.Document, settings::EPUB=EPUB())
     # zip the directory into a epub file
     toepub(doc)
 
+    @info """
+    TIP: Use https://github.com/pgaskin/kepubify to optimize the ebook for KOBO devices!
+    """
 end
 
 """
