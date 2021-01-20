@@ -125,6 +125,13 @@ Another list:
 !!! compat
     compat
 
+### Unicode
+
+```@repl
+julia> UniversalDeclarationOfHumanRightsStart = "人人生而自由，在尊严和权利上一律平等。"
+"人人生而自由，在尊严和权利上一律平等。"
+```
+
 ### External link
 
 [https://docs.julialang.org/en/v1/](https://docs.julialang.org/en/v1/)

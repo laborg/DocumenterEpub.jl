@@ -276,7 +276,7 @@ function _create_manifest_item(root, pagefile)
                     ".js" => "application/javascript",
                     ".woff2" => "font/woff2",
                     ".woff" => "font/woff",
-                    ".ttf" => "application/vnd.ms-opentype",
+                    ".ttf" => "application/font-sfnt",
                     ".ncx" => "application/x-dtbncx+xml")
 
     ext = lowercase(splitext(pagefile)[2])
