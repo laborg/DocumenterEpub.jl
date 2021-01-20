@@ -137,8 +137,42 @@ figcaption {
 
 ol,
 ul,
-dl {
-    margin: 0.2em 1em;
+dl,
+pre {
+    margin: 1rem 0;
+}
+
+ul,
+ol {
+    padding-left: 2.5em;
+    list-style-position: outside;
+}
+
+ul {
+    padding-left: 2em;
+    list-style-type: disc;
+}
+
+ul ul {
+    list-style-type: circle;
+}
+
+ol {
+    list-style-type: decimal;
+}
+
+li>ol,
+li>ul {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+ol.off,
+ul.off,
+li.off {
+    list-style-type: none;
+    padding: 0;
+    margin-left: 0;
 }
 
 dt {
@@ -152,7 +186,7 @@ dt:after {
 dd {
     padding: 0;
     margin: 0;
-    margin-left: 20pt;
+    margin-left: 24pt;
 }
 
 pre {
