@@ -132,6 +132,12 @@ testconfigs = [
     expectedfile = joinpath(@__DIR__, "build", config[:sitename] * ".epub")
     @test isfile(expectedfile)
     if isepubcheck
-        @test_nowarn run(`epubcheck -q $expectedfile`)
+        cmd = `epubcheck -q $expectedfile`
+        err = Pipe()
+        proc = run(pipeline(ignorestatus(cmd), stdout=devnull, stderr=err))
+        close(err.in)
+        errmsg = String(read(err))
+        # we expect one error for apple metadata and two additional output lines
+        @test count(==('\n'), errmsg) == 3
     end
 end
