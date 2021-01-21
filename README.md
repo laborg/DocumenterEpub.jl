@@ -48,7 +48,3 @@ makedocs(;
  - Keep the options to a minimum - currently only one option (color=true/false)
  - Remote links are displayed but aren't active
  - Files that can't be shown on e-reader devices are removed (e.g. videos)
-
-### Releases / Changelog
-
- - 0.1.0 Initial release
