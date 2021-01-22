@@ -354,8 +354,10 @@ function render(doc::Documents.Document, settings::EPUB=EPUB())
             dest = joinpath(destpath, f)
             isfile(dest) && error("Destination $dest for as target of template already exists")
             cp(src, dest)
+            chmod(dest, 0o664)
         end
     end
+
 
     # remove the unused css
     rm(joinpath(epub_content_root, settings.color ? "grayscale.css" : "github.css"))
