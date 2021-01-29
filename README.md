@@ -26,7 +26,8 @@ makedocs(;
     repo="https://github..."        # used to set the source in the EPUB metadata
     format=EPUB(
         color=false,                # syntax highlighting will use colors
-        lang="en"                   # publication language
+        lang="en",                  # publication language
+        snap_animation=true         # only take first frame of an animated gif
     )
 )
 ```

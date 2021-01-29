@@ -18,6 +18,8 @@ using Documenter.Utilities.MDFlatten
 import NodeJS
 import ZipFile
 import EzXML
+import ImageMagick
+using FileIO
 
 export EPUB
 
@@ -33,12 +35,17 @@ Selectors.runner(::Type{EPUBFormat}, fmt, doc) = render(doc, fmt)
 """
     EPUB(;[color=false, lang="en"])
 
-EPUB format Writer. `color` specifies whether or not the code highlighting will be grayscale
-or in color. `lang` sets the language in the EPUB.
+EPUB format Writer.
+ - `color` specifies whether or not the code highlighting will be grayscale
+or in color.
+ - `lang` sets the language in the EPUB.
+ - `snap_animations` if `true` replaces the animations with the first frame of it.
+    (currently only works on .gif files)
 """
 Base.@kwdef struct EPUB <: Documenter.Writer
     color::Bool = false
     lang::String = "en"
+    snap_animations::Bool = true
 end
 
 """
@@ -307,6 +314,22 @@ function _create_spine_item(pagefile)
 end
 
 const ALLOWED_EXT = (".xhtml", ".png", ".jpg", "jpeg", ".gif", ".md", ".svg", "")
+
+function snap_animations(start)
+    for (root, _, files) in walkdir(start)
+        for f in files
+            if lowercase(splitext(f)[2]) == ".gif"
+                giffile = joinpath(root, f)
+                dims,_ = ImageMagick.metadata(giffile)
+                if length(dims) > 2
+                    img = load(giffile)
+                    save(giffile,img[:,:,1])
+                end
+            end
+        end
+    end
+end
+
 function render(doc::Documents.Document, settings::EPUB=EPUB())
     !isempty(doc.user.sitename) || error("EPUB output requires `sitename`.")
 
@@ -340,6 +363,10 @@ function render(doc::Documents.Document, settings::EPUB=EPUB())
                 rm(joinpath(root, f))
             end
         end
+    end
+
+    if settings.snap_animations
+        snap_animations(epub_content_root)
     end
 
     # copy the epub template into the `epub_content_root`
