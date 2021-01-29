@@ -1,7 +1,7 @@
 name = "DocumenterEpub"
 uuid = "be4a6882-a45f-4bf3-9876-0e7ffb31ffcc"
 authors = ["Gerhard Aigner <gerhard.aigner@gmail.com>"]
-version = "0.1.4"
+version = "0.1.3"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
