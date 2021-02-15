@@ -488,33 +488,6 @@ function render(doc::Documents.Document, settings::EPUB=EPUB())
     """
 end
 
-"""
-Copies an asset from Documenters `assets/html/` directory to `doc.user.build`.
-Returns the path of the copied asset relative to `.build`.
-"""
-function copy_asset(file, doc)
-    src = joinpath(Utilities.assetsdir(), "html", file)
-    alt_src = joinpath(doc.user.source, "assets", file)
-    dst = joinpath(doc.user.build, "assets", file)
-    isfile(src) || error("Asset '$file' not found at $(abspath(src))")
-
-    # Since user's alternative assets are already copied over in a previous build
-    # step and they should override Documenter's original assets, we only actually
-    # perform the copy if <source>/assets/<file> does not exist. Note that checking
-    # the existence of <build>/assets/<file> is not sufficient since the <build>
-    # directory might be dirty from a previous build.
-    if isfile(alt_src)
-        @warn "not copying '$src', provided by the user."
-    else
-        ispath(dirname(dst)) || mkpath(dirname(dst))
-        ispath(dst) && @warn "overwriting '$dst'."
-        cp(src, dst, force=true)
-    end
-    assetpath = normpath(joinpath("assets", file))
-    # Replace any backslashes in links, if building the docs on Windows
-    return replace(assetpath, '\\' => '/')
-end
-
 # Page
 # ------------------------------------------------------------------------------
 
@@ -1056,9 +1029,9 @@ function mdconvert(d::Dict{MIME,Any}, parent; kwargs...)
         # unwrap it first, since when we output Markdown.LaTeX objects we put the correct
         # delimiters around it anyway.
         latex = d[MIME"text/latex"()]
-        equation = false
-        m_bracket = match(r"\s*\\\[(.*)\\\]\s*", latex)
-        m_dollars = match(r"\s*\$\$(.*)\$\$\s*", latex)
+        # Make sure to match multiline strings!
+        m_bracket = match(r"\s*\\\[(.*)\\\]\s*"s, latex)
+        m_dollars = match(r"\s*\$\$(.*)\$\$\s*"s, latex)
         if m_bracket === nothing && m_dollars === nothing
             out = Utilities.mdparse(latex; mode=:single)
         else
