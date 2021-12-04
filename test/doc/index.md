@@ -49,7 +49,7 @@ And a table:
 | Column One | Column Two | Column Three |
 |:---------- | ---------- |:------------:|
 | Row `1`    | Column `2` |              |
-| *Row* 2    | **Row** 2  | Column ``3`` |
+| *Row* 2    | **Row And column** 2  | Column ``3`` |
 
 ---
 
@@ -128,7 +128,7 @@ Another list:
 ### Unicode
 
 ```@repl
-julia> UniversalDeclarationOfHumanRightsStart = "人人生而自由，在尊严和权利上一律平等。"
+UniversalDeclarationOfHumanRightsStart = "人人生而自由，在尊严和权利上一律平等。"
 "人人生而自由，在尊严和权利上一律平等。"
 ```
 
@@ -154,8 +154,22 @@ a + b
 ### @repl
 
 ```@repl
-# should be 6, right?
-3+3
+3+3 # should be 6, right?
+```
+
+### @setup
+```@setup abc
+abctext = "not shown"
+```
+
+```@example abc
+println(abctext)
+```
+
+### @eval
+
+```@eval
+nine = 6+3
 ```
 
 
