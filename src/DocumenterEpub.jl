@@ -242,8 +242,6 @@ function prerender_mathjax(formula::String, display_mode::Bool)
     return svg_code
 end
 
-const HLJS_LANGS = readlines(joinpath(@__DIR__, "..", "res", "supported_langs.txt"))
-
 """
     safeid(page)
 Sanitize `page` for use in the navigation files toc.xhtml and toc.ncx.

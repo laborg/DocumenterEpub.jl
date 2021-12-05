@@ -51,7 +51,7 @@ body {
     hyphens: auto;
     widows: 2;
     orphans: 2;
-    font-family: Georgia;
+    font-family: Lato, Arial, Helvetica, sans-serif;
 }
 
 h1.titlepage,

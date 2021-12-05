@@ -110,10 +110,12 @@ catch e
     @warn "Couldn't find `epubcheck` - necessary for running the test suite"
 end
 
-testconfigs = [
-    (;sitename="color",color=true,pages=pages,version="",authors="",lang="en"),
-    (;sitename="gray",color=false,pages=pages,version="",authors="MemeLord3000",lang="en"),
-    (;sitename="nopages",color=false,pages=[],version="3.0",authors="",lang="de")
+# testconfigs = [
+#     (;sitename="color",color=true,pages=pages,version="",authors="",lang="en"),
+#     (;sitename="gray",color=false,pages=pages,version="",authors="MemeLord3000",lang="en"),
+#     (;sitename="nopages",color=false,pages=[],version="3.0",authors="",lang="de")
+# ]
+testconfigs = [    (;sitename="nopages",color=false,pages=[],version="3.0",authors="",lang="de")
 ]
 
 # the test relies on the external tool "epubcheck" to see if there are errors...

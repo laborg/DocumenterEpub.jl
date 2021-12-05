@@ -45,7 +45,9 @@ grayscale style (c) MY Sun <simonmysun@gmail.com>
     font-weight: 700;
 }
 
-.hljs-subst {}
+.hljs-subst {
+    font-weight: 400
+}
 
 .hljs-class .hljs-title,
 .hljs-type,
@@ -71,13 +73,13 @@ grayscale style (c) MY Sun <simonmysun@gmail.com>
     background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAKElEQVQIW2NkQAO7d+/+z4gsBhJwdXVlhAvCBECKwIIwAbhKZBUwBQA6hBpm5efZsgAAAABJRU5ErkJggg==) repeat;
 }
 
-.hljs-built_in,
-.hljs-builtin-name {
+.hljs-built_in {
     color: #000;
 }
 
 .hljs-meta {
     color: #999;
+    font-weight: 700
 }
 
 .hljs-deletion {
