@@ -69,7 +69,6 @@ The object has two fields:
 """
 complicated(x) = x
 
-
 """
     simple(x)
 A very simple docstring. [`complicated`](@ref)
@@ -82,18 +81,17 @@ Invokation with one param.
 """
 multidoc(x) = x
 
-
 """
     multidoc(x,y)
 Invokation with two params.
 """
-multidoc(x,y) = x + y
+multidoc(x, y) = x + y
 
 """
     multidoc(x,y,z)
 Invokation with three params.
 """
-multidoc(x,y,z) = x + y + z
+multidoc(x, y, z) = x + y + z
 
 export complicated, simple
 end
@@ -105,22 +103,26 @@ try
     else
         run(`which epubcheck`)
     end
-global isepubcheck = true
+    global isepubcheck = true
 catch e
     @warn "Couldn't find `epubcheck` - necessary for running the test suite"
 end
 
-# testconfigs = [
-#     (;sitename="color",color=true,pages=pages,version="",authors="",lang="en"),
-#     (;sitename="gray",color=false,pages=pages,version="",authors="MemeLord3000",lang="en"),
-#     (;sitename="nopages",color=false,pages=[],version="3.0",authors="",lang="de")
-# ]
-testconfigs = [    (;sitename="nopages",color=false,pages=[],version="3.0",authors="",lang="de")
+testconfigs = [
+    (; sitename="color", color=true, pages=pages, version="", authors="", lang="en"),
+    (;
+        sitename="gray",
+        color=false,
+        pages=pages,
+        version="",
+        authors="MemeLord3000",
+        lang="en",
+    ),
+    (; sitename="nopages", color=false, pages=[], version="3.0", authors="", lang="de"),
 ]
 
 # the test relies on the external tool "epubcheck" to see if there are errors...
 @testset "epubcheck $(config[:sitename])" for config in testconfigs
-
     makedocs(;
         sitename=config[:sitename],
         modules=[EPUBTest],
@@ -128,7 +130,7 @@ testconfigs = [    (;sitename="nopages",color=false,pages=[],version="3.0",autho
         authors=config[:authors],
         source=abspath(joinpath(@__DIR__, "doc")),
         pages=config[:pages],
-        format=EPUB(color=config[:color], lang=config[:lang]),
+        format=EPUB(; color=config[:color], lang=config[:lang]),
     )
 
     expectedfile = joinpath(@__DIR__, "build", config[:sitename] * ".epub")
@@ -136,7 +138,7 @@ testconfigs = [    (;sitename="nopages",color=false,pages=[],version="3.0",autho
     if isepubcheck
         cmd = `epubcheck -q $expectedfile`
         err = Pipe()
-        proc = run(pipeline(ignorestatus(cmd), stdout=devnull, stderr=err))
+        proc = run(pipeline(ignorestatus(cmd); stdout=devnull, stderr=err))
         close(err.in)
         errmsg = String(read(err))
         # we expect one error for apple metadata and two additional output lines
