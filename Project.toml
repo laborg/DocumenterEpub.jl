@@ -16,6 +16,7 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 ZipFile = "a5390f91-8eb1-5f08-bee0-b1d1ffed6cea"
 
 [compat]
+ANSIColoredPrinters = "0.0.1"
 Documenter = "0.27.0"
 EzXML = "1.1.0"
 FileIO = "1.11.0"
