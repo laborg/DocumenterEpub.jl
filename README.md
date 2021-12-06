@@ -40,8 +40,7 @@ makedocs(;
  - Use a simple layout/CSS to be compatible with older e-reader devices
  - Use [JuliaMono](https://github.com/cormullion/juliamono) for code
  - No JavaScript dependency in the resulting EPUB through:
-    - prerendering of syntax highlighting for code listings using Highlight.js, including
-        the work of Fredrik Ekre (see the blog post: https://fredrikekre.se/posts/highlight-julia/)
+    - prerendering of syntax highlighting for code listings using Highlight.js
     - prerendering of LaTeX math/formulas into SVG (epub 3.2 spec contains MathML but this is
         poorly supported... )
  - I've chosen the controversial route of letting code listings wrap the source code on
@@ -49,3 +48,8 @@ makedocs(;
  - Keep the options to a minimum - currently only one option (color=true/false)
  - Remote links are displayed but aren't active
  - Files that can't be shown on e-reader devices are removed (e.g. videos)
+
+### Changelog
+#### v0.2.0:
+ - Compatibility with Documenter v0.27.x
+ - Update of MathJax, JuliaMono and Highlights code highlighting

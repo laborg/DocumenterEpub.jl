@@ -1,7 +1,7 @@
 name = "DocumenterEpub"
 uuid = "be4a6882-a45f-4bf3-9876-0e7ffb31ffcc"
 authors = ["Gerhard Aigner <gerhard.aigner@gmail.com>"]
-version = "0.1.5"
+version = "0.2.0"
 
 [deps]
 ANSIColoredPrinters = "a4c015fc-c6ff-483c-b24f-f7ea428134e9"
