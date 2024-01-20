@@ -27,7 +27,7 @@ makedocs(;
     format=EPUB(
         color=false,                # syntax highlighting will use colors
         lang="en",                  # publication language
-        snap_animation=true         # only take first frame of an animated gif
+        snap_animations=true        # only take first frame of an animated gif
     )
 )
 ```
